@@ -1,14 +1,15 @@
 package com.udacity.gradle.builditbigger;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import io.poundcode.jokefetcher.JokeFetcher;
-import io.poundcode.jokefetcher.model.Joke;
+import io.poundcode.jokeviewerlib.JokeActvity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,9 +42,23 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void tellJoke(View view){
-      Joke joke = new JokeFetcher().fetchNewJoke();
-        Snackbar.make(view, String.format(getString(R.string.joke), joke.getQuestion(), joke.getAnswer()), Snackbar.LENGTH_LONG).show();
+    public void tellJoke(View view) {
+        String joke = new JokeFetcher().fetchNewJoke();
+//        Snackbar.make(view, joke, Snackbar.LENGTH_LONG).show();
+
+        //todo pass to android lib.
+        Intent intent = new Intent(this, JokeActvity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("joke", joke);
+        intent.putExtras(bundle);
+        Uri uri = new Uri.Builder()
+            .scheme("joke")
+            .build();
+        intent.setType("text/plain");
+        intent.setData(uri);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
 
