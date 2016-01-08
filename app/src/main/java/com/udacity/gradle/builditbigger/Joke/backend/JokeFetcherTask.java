@@ -46,6 +46,7 @@ public class JokeFetcherTask extends AsyncTask<Void, Void, String> {
         try {
             return myApiService.tellJoke().execute().getData();
         } catch (IOException e) {
+            listener.errorLoadingJoke(e);
             return e.getMessage();
         }
     }
@@ -53,6 +54,7 @@ public class JokeFetcherTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         //listener to get joke.
+
         if (listener != null) {
             listener.jokeLoaded(result);
         } else {

@@ -13,6 +13,7 @@
         android:id="@+id/instructions_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:text="@string/instructions"
         />
 
@@ -20,6 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/instructions_text_view"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
         android:onClick="tellJoke"
         android:text="@string/button_text"
 

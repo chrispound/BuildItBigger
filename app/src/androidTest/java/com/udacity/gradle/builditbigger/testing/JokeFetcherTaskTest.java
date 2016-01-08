@@ -20,6 +20,11 @@ public class JokeFetcherTaskTest extends AndroidTestCase {
                 mResult = result;
                 signal.countDown();
             }
+
+            @Override
+            public void errorLoadingJoke(Exception e) {
+                fail();
+            }
         }).execute();
         signal = new CountDownLatch(1);
         signal.await();
