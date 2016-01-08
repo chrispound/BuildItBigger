@@ -1,21 +1,31 @@
 package com.udacity.gradle.builditbigger;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
-import io.poundcode.jokefetcher.JokeFetcher;
-import io.poundcode.jokefetcher.model.Joke;
+import com.udacity.gradle.builditbigger.joke.JokeFragment;
+import com.udacity.gradle.builditbigger.joke.backend.JokeFetcherListener;
+import com.udacity.gradle.builditbigger.joke.backend.JokeFetcherTask;
 
-public class MainActivity extends AppCompatActivity {
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import io.poundcode.jokeviewerlib.JokeActvity;
+
+public class MainActivity extends AppCompatActivity implements JokePresenter {
+
+    @Bind(R.id.progress)
+    View progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
     }
 
 
@@ -27,24 +37,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void tellJoke(View view) {
+        //todo load add if free
+        ((JokeFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_joke)).showJoke();
     }
 
-    public void tellJoke(View view){
-      Joke joke = new JokeFetcher().fetchNewJoke();
-        Snackbar.make(view, String.format(getString(R.string.joke), joke.getQuestion(), joke.getAnswer()), Snackbar.LENGTH_LONG).show();
+    @Override
+    public void loadNextJoke() {
+        progress.setVisibility(View.VISIBLE);
+        new JokeFetcherTask(new JokeFetcherListener() {
+            @Override
+            public void jokeLoaded(String result) {
+                Intent intent = new Intent(MainActivity.this, JokeActvity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("joke", result);
+                intent.putExtras(bundle);
+                Uri uri = new Uri.Builder()
+                    .scheme("joke")
+                    .build();
+                intent.setType("text/plain");
+                intent.setData(uri);
+                progress.setVisibility(View.GONE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void errorLoadingJoke(Exception e) {
+                Snackbar.make(progress, R.string.error_loading_joke, Snackbar.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progress.setVisibility(View.GONE);
+                    }
+                });
+            }
+        }).execute();
     }
-
-
 }
