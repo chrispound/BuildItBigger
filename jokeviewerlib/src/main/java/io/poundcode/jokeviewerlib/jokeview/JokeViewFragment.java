@@ -45,7 +45,6 @@ public class JokeViewFragment extends Fragment implements JokeViewContract.View 
 
     @Override
     public void displayJokeToUser(String joke) {
-        //todo display joke
         mJokeDisplay.setText(joke);
     }
 
