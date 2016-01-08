@@ -26,32 +26,34 @@ android {
         }
     }
 }
-//evaluationDependsOn ":jokebackend"
-//project(":jokebackend") {
-//    appengine {
-//        daemon true
-//    }
-//}
-//task deployandtestRun(dependsOn: [':jokebackend:appengineRun', 'deployandtest']) {
-//    finalizedBy ':jokebackend:appengineStop'
-//    doLast {
-//        println "deploy and test run done."
-//    }
-//}
-//task deployandtestStop(dependsOn: ':jokebackend:appengineStop') {
-//    doLast {
-//        printLn "stopping server"
-//    }
-//}
-//
-//task deployandtest {
-//    dependsOn 'connectedCheck'
-//    mustRunAfter ':jokebackend:appengineRun'
-//    finalizedBy ':jokebackend:appengineStop'
-//    doLast {
-//        println "Completed"
-//    }
-//}
+
+evaluationDependsOn ":jokebackend"
+project(":jokebackend") {
+    appengine {
+        daemon true
+    }
+}
+
+task deployandtestRun(dependsOn: [':jokebackend:appengineRun', 'deployandtest']) {
+    finalizedBy ':jokebackend:appengineStop'
+    doLast {
+        println "deploy and test run done."
+    }
+}
+task deployandtestStop(dependsOn: ':jokebackend:appengineStop') {
+    doLast {
+        println "stopping server"
+    }
+}
+
+task deployandtest {
+    dependsOn 'connectedCheck'
+    mustRunAfter ':jokebackend:appengineRun'
+    finalizedBy ':jokebackend:appengineStop'
+    doLast {
+        println "Completed"
+    }
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
